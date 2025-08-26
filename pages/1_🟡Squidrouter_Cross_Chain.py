@@ -793,7 +793,7 @@ def load_source_chain_data(start_date, end_date):
 # --- Load Data ----------------------------------------------------------------------------------------------------
 df_source = load_source_chain_data(start_date, end_date)
 
-# --- Top 10 Horizontal Bar Charts ----------------------------------------------------------------------------------
+# --- Top 10 Vertical Bar Charts ----------------------------------------------------------------------------------
 top_vol = df_source.nlargest(10, "Volume of Transfers (USD)")
 top_txn = df_source.nlargest(10, "Number of Transfers")
 top_usr = df_source.nlargest(10, "Number of Users")
@@ -802,33 +802,36 @@ col1, col2, col3 = st.columns(3)
 
 with col1:
     fig1 = px.bar(
-        top_vol.sort_values("Volume of Transfers (USD)"),
-        x="Volume of Transfers (USD)", y="Source Chain",
-        orientation="h",
+        top_vol.sort_values("Volume of Transfers (USD)", ascending=False),
+        x="Source Chain", y="Volume of Transfers (USD)",
+        text="Volume of Transfers (USD)",  
+        color="Source Chain",  
         title="Top 10 Source Chains by Volume (USD)",
         labels={"Volume of Transfers (USD)": "USD", "Source Chain": " "},
-        color_discrete_sequence=["#ca99e5"]
     )
+    fig1.update_traces(textposition='outside') 
     st.plotly_chart(fig1, use_container_width=True)
 
 with col2:
     fig2 = px.bar(
-        top_txn.sort_values("Number of Transfers"),
-        x="Number of Transfers", y="Source Chain",
-        orientation="h",
+        top_txn.sort_values("Number of Transfers", ascending=False),
+        x="Source Chain", y="Number of Transfers",
+        text="Number of Transfers",
+        color="Source Chain",
         title="Top 10 Source Chains by Transfers",
         labels={"Number of Transfers": "Txns count", "Source Chain": " "},
-        color_discrete_sequence=["#ca99e5"]
     )
+    fig2.update_traces(textposition='outside')
     st.plotly_chart(fig2, use_container_width=True)
 
 with col3:
     fig3 = px.bar(
-        top_usr.sort_values("Number of Users"),
-        x="Number of Users", y="Source Chain",
-        orientation="h",
+        top_usr.sort_values("Number of Users", ascending=False),
+        x="Source Chain", y="Number of Users",
+        text="Number of Users",
+        color="Source Chain",
         title="Top 10 Source Chains by Users",
         labels={"Number of Users": "Address count", "Source Chain": " "},
-        color_discrete_sequence=["#ca99e5"]
     )
+    fig3.update_traces(textposition='outside')
     st.plotly_chart(fig3, use_container_width=True)
