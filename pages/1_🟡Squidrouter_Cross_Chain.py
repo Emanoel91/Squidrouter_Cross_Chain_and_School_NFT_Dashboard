@@ -806,7 +806,7 @@ with col1:
         x="Source Chain", y="Volume of Transfers (USD)",
         text="Volume of Transfers (USD)",  
         color="Source Chain",  
-        title="Top 10 Source Chains by Volume (USD)",
+        title="Top 10 Source Chains by Swap Volume",
         labels={"Volume of Transfers (USD)": "USD", "Source Chain": " "},
     )
     fig1.update_traces(textposition='outside') 
@@ -818,7 +818,7 @@ with col2:
         x="Source Chain", y="Number of Transfers",
         text="Number of Transfers",
         color="Source Chain",
-        title="Top 10 Source Chains by Transfers",
+        title="Top 10 Source Chains by Swap Count",
         labels={"Number of Transfers": "Txns count", "Source Chain": " "},
     )
     fig2.update_traces(textposition='outside')
@@ -830,7 +830,7 @@ with col3:
         x="Source Chain", y="Number of Users",
         text="Number of Users",
         color="Source Chain",
-        title="Top 10 Source Chains by Users",
+        title="Top 10 Source Chains by Swapper Count",
         labels={"Number of Users": "Address count", "Source Chain": " "},
     )
     fig3.update_traces(textposition='outside')
@@ -972,7 +972,7 @@ fig_vol_dest = px.bar(
     y="Volume of Transfers (USD)",
     text="Volume of Transfers (USD)", 
     color="Destination Chain",         
-    title="Top 10 Destination Chains by Volume (USD)",
+    title="Top 10 Destination Chains by Swap Volume",
     labels={"Volume of Transfers (USD)": "USD", "Destination Chain": " "},
 )
 fig_vol_dest.update_traces(textposition='outside')  
@@ -985,7 +985,7 @@ fig_txn_dest = px.bar(
     y="Number of Transfers",
     text="Number of Transfers",
     color="Destination Chain",
-    title="Top 10 Destination Chains by Transfers",
+    title="Top 10 Destination Chains by Swap Count",
     labels={"Number of Transfers": "Txns count", "Destination Chain": " "},
 )
 fig_txn_dest.update_traces(textposition='outside')
@@ -998,7 +998,7 @@ fig_usr_dest = px.bar(
     y="Number of Users",
     text="Number of Users",
     color="Destination Chain",
-    title="Top 10 Destination Chains by Users",
+    title="Top 10 Destination Chains by Swapper count",
     labels={"Number of Users": "Addresses count", "Destination Chain": " "},
 )
 fig_usr_dest.update_traces(textposition='outside')
