@@ -623,21 +623,24 @@ def make_network_chart(df, weight_col, title):
 
     pos = nx.spring_layout(G, k=0.5, seed=42)
 
-    edge_x, edge_y, edge_width = [], [], []
+    # --- Create edge traces individually ---
+    edge_traces = []
+    max_weight = df[weight_col].max()
     for u, v, d in G.edges(data=True):
         x0, y0 = pos[u]
         x1, y1 = pos[v]
-        edge_x += [x0, x1, None]
-        edge_y += [y0, y1, None]
-        edge_width.append(d["weight"])
+        weight = max(1, d['weight']/max_weight*10)  # scale width
+        trace = go.Scatter(
+            x=[x0, x1],
+            y=[y0, y1],
+            line=dict(width=weight, color="LightSkyBlue"),
+            hoverinfo='text',
+            mode='lines',
+            text=f"{u} → {v}<br>{weight_col}: {d['weight']}"
+        )
+        edge_traces.append(trace)
 
-    edge_trace = go.Scatter(
-        x=edge_x, y=edge_y,
-        line=dict(width=[max(1, w/df[weight_col].max()*10) for w in edge_width], color="LightSkyBlue"),
-        hoverinfo="none",
-        mode="lines"
-    )
-
+    # --- Create node trace ---
     node_x, node_y, text = [], [], []
     for node in G.nodes():
         x, y = pos[node]
@@ -654,7 +657,7 @@ def make_network_chart(df, weight_col, title):
         marker=dict(size=20, color="orange", line=dict(width=2, color="DarkSlateGrey"))
     )
 
-    fig = go.Figure(data=[edge_trace, node_trace],
+    fig = go.Figure(data=edge_traces + [node_trace],
                     layout=go.Layout(
                         title=title,
                         showlegend=False,
