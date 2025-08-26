@@ -5,6 +5,7 @@ import plotly.express as px
 import plotly.graph_objects as go
 from cryptography.hazmat.primitives import serialization
 from cryptography.hazmat.backends import default_backend
+import networkx as nx
 
 # --- Page Config ------------------------------------------------------------------------------------------------------
 st.set_page_config(
@@ -531,64 +532,154 @@ with col2:
     st.plotly_chart(fig2, use_container_width=True)
 
 
+# --- Cached Data Loader ------------------------------------------------------------------------------------------------------------------------------------------------
+@st.cache_data
+def load_chain_flows(start_date, end_date):
+    start_str = start_date.strftime("%Y-%m-%d")
+    end_str = end_date.strftime("%Y-%m-%d")
 
-import networkx as nx
+    query = f"""
+    WITH axelar_service AS (
+        -- Transfers
+        SELECT 
+            created_at, 
+            LOWER(data:send:original_source_chain) AS source_chain, 
+            LOWER(data:send:original_destination_chain) AS destination_chain,
+            recipient_address AS user, 
+            CASE 
+              WHEN IS_ARRAY(data:send:amount) OR IS_OBJECT(data:send:amount) THEN NULL
+              WHEN TRY_TO_DOUBLE(data:send:amount::STRING) IS NOT NULL THEN TRY_TO_DOUBLE(data:send:amount::STRING)
+              ELSE NULL
+            END AS amount,
+            CASE 
+              WHEN IS_ARRAY(data:send:amount) OR IS_OBJECT(data:send:amount) 
+                   OR IS_ARRAY(data:link:price) OR IS_OBJECT(data:link:price) THEN NULL
+              WHEN TRY_TO_DOUBLE(data:send:amount::STRING) IS NOT NULL 
+                   AND TRY_TO_DOUBLE(data:link:price::STRING) IS NOT NULL 
+              THEN TRY_TO_DOUBLE(data:send:amount::STRING) * TRY_TO_DOUBLE(data:link:price::STRING)
+              ELSE NULL
+            END AS amount_usd,
+            id, 
+            recipient_address AS user
+        FROM axelar.axelscan.fact_transfers
+        WHERE status = 'executed'
+          AND simplified_status = 'received'
+          AND (
+              sender_address ilike '%0xce16F69375520ab01377ce7B88f5BA8C48F8D666%'
+              OR sender_address ilike '%0x492751eC3c57141deb205eC2da8bFcb410738630%'
+              OR sender_address ilike '%0xDC3D8e1Abe590BCa428a8a2FC4CfDbD1AcF57Bd9%'
+              OR sender_address ilike '%0xdf4fFDa22270c12d0b5b3788F1669D709476111E%'
+              OR sender_address ilike '%0xe6B3949F9bBF168f4E3EFc82bc8FD849868CC6d8%'
+          )
+        UNION ALL
+        -- GMP
+        SELECT  
+            created_at,
+            LOWER(data:call.chain::STRING) AS source_chain,
+            LOWER(data:call.returnValues.destinationChain::STRING) AS destination_chain,
+            data:call.transaction.from::STRING AS user,
+            CASE 
+              WHEN IS_ARRAY(data:amount) OR IS_OBJECT(data:amount) THEN NULL
+              WHEN TRY_TO_DOUBLE(data:amount::STRING) IS NOT NULL THEN TRY_TO_DOUBLE(data:amount::STRING)
+              ELSE NULL
+            END AS amount,
+            CASE 
+              WHEN IS_ARRAY(data:value) OR IS_OBJECT(data:value) THEN NULL
+              WHEN TRY_TO_DOUBLE(data:value::STRING) IS NOT NULL THEN TRY_TO_DOUBLE(data:value::STRING)
+              ELSE NULL
+            END AS amount_usd,
+            id, 
+            data:call.transaction.from::STRING AS user
+        FROM axelar.axelscan.fact_gmp 
+        WHERE status = 'executed'
+          AND simplified_status = 'received'
+          AND (
+              data:approved:returnValues:contractAddress ilike '%0xce16F69375520ab01377ce7B88f5BA8C48F8D666%'
+              OR data:approved:returnValues:contractAddress ilike '%0x492751eC3c57141deb205eC2da8bFcb410738630%'
+              OR data:approved:returnValues:contractAddress ilike '%0xDC3D8e1Abe590BCa428a8a2FC4CfDbD1AcF57Bd9%'
+              OR data:approved:returnValues:contractAddress ilike '%0xdf4fFDa22270c12d0b5b3788F1669D709476111E%'
+              OR data:approved:returnValues:contractAddress ilike '%0xe6B3949F9bBF168f4E3EFc82bc8FD849868CC6d8%'
+          )
+    )
+    SELECT source_chain AS "Source Chain", 
+           destination_chain AS "Destination Chain",
+           ROUND(SUM(amount_usd)) AS "Swap Volume (USD)", 
+           COUNT(DISTINCT id) AS "Swap Count", 
+           COUNT(DISTINCT user) AS "Swapper Count"
+    FROM axelar_service
+    WHERE created_at::date >= '{start_str}' AND created_at::date <= '{end_str}'
+    GROUP BY 1, 2;
+    """
 
-# ایجاد یک گراف
-G = nx.Graph()
+    df = pd.read_sql(query, conn)
+    return df
 
-# اضافه کردن گره‌ها
-chains = ["Ethereum", "BSC", "Polygon", "Avalanche"]
-G.add_nodes_from(chains)
+# --- Load Data -------------------------------------------------------------------------------------------------
+df_flows = load_chain_flows(start_date, end_date)
 
-# اضافه کردن یال‌ها با وزن (حجم تراکنش)
-edges = [
-    ("Ethereum", "BSC", 1200),
-    ("Ethereum", "Polygon", 800),
-    ("BSC", "Avalanche", 500),
-    ("Polygon", "Avalanche", 300),
-]
-for u, v, w in edges:
-    G.add_edge(u, v, weight=w)
+# --- Build Graph Function --------------------------------------------------------------------------------------
+def make_network_chart(df, weight_col, title):
+    G = nx.DiGraph()
 
-# گرفتن موقعیت گره‌ها
-pos = nx.spring_layout(G, seed=42)
+    for _, row in df.iterrows():
+        G.add_edge(
+            row["Source Chain"],
+            row["Destination Chain"],
+            weight=row[weight_col]
+        )
 
-# رسم گره‌ها
-edge_x = []
-edge_y = []
-weights = []
-for edge in G.edges(data=True):
-    x0, y0 = pos[edge[0]]
-    x1, y1 = pos[edge[1]]
-    edge_x += [x0, x1, None]
-    edge_y += [y0, y1, None]
-    weights.append(edge[2]['weight'])
+    pos = nx.spring_layout(G, k=0.5, seed=42)  # layout for visualization
 
-edge_trace = go.Scatter(
-    x=edge_x, y=edge_y,
-    line=dict(width=[w/300 for w in weights], color='gray'),
-    hoverinfo='none',
-    mode='lines'
-)
+    edge_x, edge_y, edge_width = [], [], []
+    for u, v, d in G.edges(data=True):
+        x0, y0 = pos[u]
+        x1, y1 = pos[v]
+        edge_x += [x0, x1, None]
+        edge_y += [y0, y1, None]
+        edge_width.append(d["weight"])
 
-node_x = []
-node_y = []
-for node in G.nodes():
-    x, y = pos[node]
-    node_x.append(x)
-    node_y.append(y)
+    edge_trace = go.Scatter(
+        x=edge_x, y=edge_y,
+        line=dict(width=[max(1, w/df[weight_col].max()*10) for w in edge_width], color="LightSkyBlue"),
+        hoverinfo="none",
+        mode="lines"
+    )
 
-node_trace = go.Scatter(
-    x=node_x, y=node_y,
-    mode='markers+text',
-    text=list(G.nodes()),
-    textposition="bottom center",
-    marker=dict(size=20, color='lightblue', line=dict(width=2, color='darkblue'))
-)
+    node_x, node_y, text = [], [], []
+    for node in G.nodes():
+        x, y = pos[node]
+        node_x.append(x)
+        node_y.append(y)
+        text.append(node)
 
-fig = go.Figure(data=[edge_trace, node_trace])
-fig.update_layout(showlegend=False)
+    node_trace = go.Scatter(
+        x=node_x, y=node_y,
+        mode="markers+text",
+        text=text,
+        textposition="top center",
+        hoverinfo="text",
+        marker=dict(size=20, color="orange", line=dict(width=2, color="DarkSlateGrey"))
+    )
 
-st.plotly_chart(fig, use_container_width=True)
+    fig = go.Figure(data=[edge_trace, node_trace],
+                    layout=go.Layout(
+                        title=title,
+                        showlegend=False,
+                        hovermode="closest",
+                        margin=dict(b=20, l=5, r=5, t=40),
+                        xaxis=dict(showgrid=False, zeroline=False, showticklabels=False),
+                        yaxis=dict(showgrid=False, zeroline=False, showticklabels=False)
+                    ))
+    return fig
 
+# --- Tabs for Different Metrics --------------------------------------------------------------------------------
+tab1, tab2, tab3 = st.tabs(["Swap Volume", "Swap Count", "Swapper Count"])
+
+with tab1:
+    st.plotly_chart(make_network_chart(df_flows, "Swap Volume (USD)", "Flows by Swap Volume"), use_container_width=True)
+
+with tab2:
+    st.plotly_chart(make_network_chart(df_flows, "Swap Count", "Flows by Swap Count"), use_container_width=True)
+
+with tab3:
+    st.plotly_chart(make_network_chart(df_flows, "Swapper Count", "Flows by Swapper Count"), use_container_width=True)
