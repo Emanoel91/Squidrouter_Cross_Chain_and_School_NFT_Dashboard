@@ -513,9 +513,9 @@ with col1:
     fig1.update_layout(
         barmode="stack",
         title="Number of Swappers Over Time",
-        xaxis_title="Date",
-        yaxis_title="Users",
-        legend_title="Metrics",
+        xaxis_title=" ",
+        yaxis_title="User count",
+        legend_title=" ",
         template="plotly_white"
     )
     st.plotly_chart(fig1, use_container_width=True)
@@ -524,8 +524,8 @@ with col1:
 with col2:
     fig2 = px.area(df, x="Date", y="User Growth", title="Users Growth Over Time")
     fig2.update_layout(
-        xaxis_title="Date",
-        yaxis_title="Cumulative Users",
+        xaxis_title=" ",
+        yaxis_title="user count",
         template="plotly_white"
     )
     st.plotly_chart(fig2, use_container_width=True)
