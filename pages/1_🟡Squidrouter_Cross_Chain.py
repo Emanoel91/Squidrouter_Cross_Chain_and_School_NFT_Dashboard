@@ -179,17 +179,9 @@ def load_kpi_data(timeframe, start_date, end_date):
 df_kpi = load_kpi_data(timeframe, start_date, end_date)
 
 # --- KPI Row ------------------------------------------------------------------------------------------------------
-# داده‌های نمونه
-df_kpi = {
-    "VOLUME_OF_TRANSFERS": [123456789],
-    "NUMBER_OF_TRANSFERS": [98765],
-    "NUMBER_OF_USERS": [43210]
-}
-
-# آدرس لوگو
 logo_url = "https://img.cryptorank.io/coins/squid1675241862798.png"
 
-# استایل کارت KPI با لوگو در بک‌گراند
+# استایل کارت KPI
 kpi_card_style = f"""
 <style>
 .kpi-card {{
@@ -201,18 +193,19 @@ kpi_card_style = f"""
     box-shadow: 0 4px 10px rgba(0,0,0,0.1);
     font-family: Arial, sans-serif;
     overflow: hidden;
+    height: 140px;
 }}
 .kpi-card::before {{
     content: "";
     background: url({logo_url}) no-repeat center;
     background-size: 120px;
-    opacity: 0.1;
+    opacity: 0.08;  /* کم‌رنگ بودن لوگو */
     position: absolute;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    width: 150px;
-    height: 150px;
+    width: 160px;
+    height: 160px;
     z-index: 0;
 }}
 .kpi-label {{
@@ -223,18 +216,20 @@ kpi_card_style = f"""
     z-index: 1;
 }}
 .kpi-value {{
-    font-size: 26px;
+    font-size: 28px;
     font-weight: 700;
     color: #111;
-    margin-top: 10px;
+    margin-top: 15px;
     position: relative;
     z-index: 1;
 }}
 </style>
 """
 
+# اعمال استایل
 st.markdown(kpi_card_style, unsafe_allow_html=True)
 
+# سه ستون برای KPIها
 col1, col2, col3 = st.columns(3)
 
 with col1:
