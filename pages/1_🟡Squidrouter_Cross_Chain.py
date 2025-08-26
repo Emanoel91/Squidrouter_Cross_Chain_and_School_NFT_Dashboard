@@ -1149,7 +1149,7 @@ fig_vol_dest = px.bar(
     orientation="h",
     title="Top 10 Paths by Swap Volume",
     labels={"Volume of Transfers (USD)": "USD", "Path": " "},
-    color_discrete_sequence=["#fff200"]
+    color_discrete_sequence=["#80b4e4"]
 )
 fig_vol_dest.update_xaxes(tickformat=",.0f")
 fig_vol_dest.update_traces(hovertemplate="%{y}: $%{x:,.0f}<extra></extra>")
@@ -1162,7 +1162,7 @@ fig_txn_dest = px.bar(
     orientation="h",
     title="Top 10 Paths by Swap Count",
     labels={"Number of Transfers": "Txns count", "Path": " "},
-    color_discrete_sequence=["#fff200"]
+    color_discrete_sequence=["#80b4e4"]
 )
 fig_txn_dest.update_xaxes(tickformat=",.0f")
 fig_txn_dest.update_traces(hovertemplate="%{y}: %{x:,}<extra></extra>")
@@ -1175,7 +1175,7 @@ fig_usr_dest = px.bar(
     orientation="h",
     title="Top 10 Paths by Swapper count",
     labels={"Number of Users": "Addresses count", "Path": " "},
-    color_discrete_sequence=["#fff200"]
+    color_discrete_sequence=["#80b4e4"]
 )
 fig_usr_dest.update_xaxes(tickformat=",.0f")
 fig_usr_dest.update_traces(hovertemplate="%{y}: %{x:,}<extra></extra>")
