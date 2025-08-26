@@ -529,3 +529,66 @@ with col2:
         template="plotly_white"
     )
     st.plotly_chart(fig2, use_container_width=True)
+
+
+
+import networkx as nx
+
+# ایجاد یک گراف
+G = nx.Graph()
+
+# اضافه کردن گره‌ها
+chains = ["Ethereum", "BSC", "Polygon", "Avalanche"]
+G.add_nodes_from(chains)
+
+# اضافه کردن یال‌ها با وزن (حجم تراکنش)
+edges = [
+    ("Ethereum", "BSC", 1200),
+    ("Ethereum", "Polygon", 800),
+    ("BSC", "Avalanche", 500),
+    ("Polygon", "Avalanche", 300),
+]
+for u, v, w in edges:
+    G.add_edge(u, v, weight=w)
+
+# گرفتن موقعیت گره‌ها
+pos = nx.spring_layout(G, seed=42)
+
+# رسم گره‌ها
+edge_x = []
+edge_y = []
+weights = []
+for edge in G.edges(data=True):
+    x0, y0 = pos[edge[0]]
+    x1, y1 = pos[edge[1]]
+    edge_x += [x0, x1, None]
+    edge_y += [y0, y1, None]
+    weights.append(edge[2]['weight'])
+
+edge_trace = go.Scatter(
+    x=edge_x, y=edge_y,
+    line=dict(width=[w/300 for w in weights], color='gray'),
+    hoverinfo='none',
+    mode='lines'
+)
+
+node_x = []
+node_y = []
+for node in G.nodes():
+    x, y = pos[node]
+    node_x.append(x)
+    node_y.append(y)
+
+node_trace = go.Scatter(
+    x=node_x, y=node_y,
+    mode='markers+text',
+    text=list(G.nodes()),
+    textposition="bottom center",
+    marker=dict(size=20, color='lightblue', line=dict(width=2, color='darkblue'))
+)
+
+fig = go.Figure(data=[edge_trace, node_trace])
+fig.update_layout(showlegend=False)
+
+st.plotly_chart(fig, use_container_width=True)
+
