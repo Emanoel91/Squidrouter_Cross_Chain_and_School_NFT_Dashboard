@@ -379,7 +379,7 @@ with col1:
         df_ts,
         x="DATE",
         y="VOLUME_OF_TRANSFERS",
-        title="Swap Volume Over Time (USD)",
+        title="Swap Volume Over Time ($USD)",
         labels={"VOLUME_OF_TRANSFERS": "Volume (USD)", "DATE": "Date"},
         color_discrete_sequence=["#80b4e4"]
     )
