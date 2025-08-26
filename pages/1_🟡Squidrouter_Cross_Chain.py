@@ -1138,51 +1138,48 @@ def load_Path_data(start_date, end_date):
 df_Path = load_Path_data(start_date, end_date)
 
 # --- prepare top-10s and charts (horizontal bars) ------------------------------------
-top_vol_dest = df_Path.nlargest(10, "Volume of Transfers (USD)").sort_values("Volume of Transfers (USD)", ascending=True)
-top_txn_dest = df_Path.nlargest(10, "Number of Transfers").sort_values("Number of Transfers", ascending=True)
-top_usr_dest = df_Path.nlargest(10, "Number of Users").sort_values("Number of Users", ascending=True)
+top_vol_dest = df_Path.nlargest(10, "Volume of Transfers (USD)").sort_values("Volume of Transfers (USD)", ascending=False)
+top_txn_dest = df_Path.nlargest(10, "Number of Transfers").sort_values("Number of Transfers", ascending=False)
+top_usr_dest = df_Path.nlargest(10, "Number of Users").sort_values("Number of Users", ascending=False)
 
-# Volume chart
 fig_vol_dest = px.bar(
     top_vol_dest,
     x="Volume of Transfers (USD)",
     y="Path",
     orientation="h",
-    text="Volume of Transfers (USD)",  
-    color="Path",                       
     title="Top 10 Paths by Swap Volume",
     labels={"Volume of Transfers (USD)": "USD", "Path": " "},
+    color_discrete_sequence=["#fff200"]
 )
 fig_vol_dest.update_xaxes(tickformat=",.0f")
-fig_vol_dest.update_traces(hovertemplate="%{y}: $%{x:,.0f}<extra></extra>", textposition='outside')
+fig_vol_dest.update_traces(hovertemplate="%{y}: $%{x:,.0f}<extra></extra>")
+fig_vol_dest.update_yaxes(autorange="reversed")  
 
-# Transfers chart
 fig_txn_dest = px.bar(
     top_txn_dest,
     x="Number of Transfers",
     y="Path",
     orientation="h",
-    text="Number of Transfers",
-    color="Path",
     title="Top 10 Paths by Swap Count",
     labels={"Number of Transfers": "Txns count", "Path": " "},
+    color_discrete_sequence=["#fff200"]
 )
 fig_txn_dest.update_xaxes(tickformat=",.0f")
-fig_txn_dest.update_traces(hovertemplate="%{y}: %{x:,}<extra></extra>", textposition='outside')
+fig_txn_dest.update_traces(hovertemplate="%{y}: %{x:,}<extra></extra>")
+fig_txn_dest.update_yaxes(autorange="reversed")
 
-# Users chart
 fig_usr_dest = px.bar(
     top_usr_dest,
     x="Number of Users",
     y="Path",
     orientation="h",
-    text="Number of Users",
-    color="Path",
     title="Top 10 Paths by Swapper count",
     labels={"Number of Users": "Addresses count", "Path": " "},
+    color_discrete_sequence=["#fff200"]
 )
 fig_usr_dest.update_xaxes(tickformat=",.0f")
-fig_usr_dest.update_traces(hovertemplate="%{y}: %{x:,}<extra></extra>", textposition='outside')
+fig_usr_dest.update_traces(hovertemplate="%{y}: %{x:,}<extra></extra>")
+fig_usr_dest.update_yaxes(autorange="reversed")
 
 # --- display three charts in one row -----------------------------------------------
 col1, col2, col3 = st.columns(3)
@@ -1190,7 +1187,5 @@ with col1:
     st.plotly_chart(fig_vol_dest, use_container_width=True)
 with col2:
     st.plotly_chart(fig_txn_dest, use_container_width=True)
-with col3:
-    st.plotly_chart(fig_usr_dest, use_container_width=True)
 with col3:
     st.plotly_chart(fig_usr_dest, use_container_width=True)
