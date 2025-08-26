@@ -375,7 +375,7 @@ with col1:
         df_ts,
         x="DATE",
         y="VOLUME_OF_TRANSFERS",
-        title="Squid Bridge Volume Over Time (USD)",
+        title="Swap Volume Over Time (USD)",
         labels={"VOLUME_OF_TRANSFERS": "Volume (USD)", "DATE": "Date"},
         color_discrete_sequence=["#e2fb43"]
     )
@@ -387,7 +387,7 @@ with col2:
         df_ts,
         x="DATE",
         y="NUMBER_OF_TRANSFERS",
-        title="Squid Bridge Transactions Over Time",
+        title="Swap Count Over Time",
         labels={"NUMBER_OF_TRANSFERS": "Transactions", "DATE": "Date"},
         color_discrete_sequence=["#e2fb43"]
     )
