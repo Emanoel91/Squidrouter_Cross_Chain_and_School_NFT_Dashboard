@@ -368,7 +368,7 @@ def load_time_series_data(timeframe, start_date, end_date):
 df_ts = load_time_series_data(timeframe, start_date, end_date)
 
 # --- Charts in One Row ---------------------------------------------------------------------------------------------
-col1, col2, col3 = st.columns(3)
+col1, col2 = st.columns(2)
 
 with col1:
     fig1 = px.bar(
@@ -393,15 +393,3 @@ with col2:
     )
     fig2.update_layout(xaxis_title="", yaxis_title="Txns", bargap=0.2)
     st.plotly_chart(fig2, use_container_width=True)
-
-with col3:
-    fig3 = px.bar(
-        df_ts,
-        x="DATE",
-        y="NUMBER_OF_USERS",
-        title="Squid Bridge Users Over Time",
-        labels={"NUMBER_OF_USERS": "Users", "DATE": "Date"},
-        color_discrete_sequence=["#e2fb43"]
-    )
-    fig3.update_layout(xaxis_title="", yaxis_title="Addresses", bargap=0.2)
-    st.plotly_chart(fig3, use_container_width=True)
