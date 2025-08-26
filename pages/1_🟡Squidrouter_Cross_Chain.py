@@ -179,22 +179,87 @@ def load_kpi_data(timeframe, start_date, end_date):
 df_kpi = load_kpi_data(timeframe, start_date, end_date)
 
 # --- KPI Row ------------------------------------------------------------------------------------------------------
+# داده‌های نمونه
+df_kpi = {
+    "VOLUME_OF_TRANSFERS": [123456789],
+    "NUMBER_OF_TRANSFERS": [98765],
+    "NUMBER_OF_USERS": [43210]
+}
+
+# آدرس لوگو
+logo_url = "https://img.cryptorank.io/coins/squid1675241862798.png"
+
+# استایل کارت KPI با لوگو در بک‌گراند
+kpi_card_style = f"""
+<style>
+.kpi-card {{
+    position: relative;
+    background-color: white;
+    border-radius: 15px;
+    padding: 20px;
+    text-align: center;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    font-family: Arial, sans-serif;
+    overflow: hidden;
+}}
+.kpi-card::before {{
+    content: "";
+    background: url({logo_url}) no-repeat center;
+    background-size: 120px;
+    opacity: 0.1;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 150px;
+    height: 150px;
+    z-index: 0;
+}}
+.kpi-label {{
+    font-size: 18px;
+    font-weight: bold;
+    color: #333;
+    position: relative;
+    z-index: 1;
+}}
+.kpi-value {{
+    font-size: 26px;
+    font-weight: 700;
+    color: #111;
+    margin-top: 10px;
+    position: relative;
+    z-index: 1;
+}}
+</style>
+"""
+
+st.markdown(kpi_card_style, unsafe_allow_html=True)
+
 col1, col2, col3 = st.columns(3)
 
-col1.metric(
-    label="Volume of Transfers",
-    value=f"${df_kpi['VOLUME_OF_TRANSFERS'][0]:,}"
-)
+with col1:
+    st.markdown(f"""
+    <div class="kpi-card">
+        <div class="kpi-label">Volume of Transfers</div>
+        <div class="kpi-value">${df_kpi['VOLUME_OF_TRANSFERS'][0]:,}</div>
+    </div>
+    """, unsafe_allow_html=True)
 
-col2.metric(
-    label="Number of Transfers",
-    value=f"{df_kpi['NUMBER_OF_TRANSFERS'][0]:,} Txns"
-)
+with col2:
+    st.markdown(f"""
+    <div class="kpi-card">
+        <div class="kpi-label">Number of Transfers</div>
+        <div class="kpi-value">{df_kpi['NUMBER_OF_TRANSFERS'][0]:,} Txns</div>
+    </div>
+    """, unsafe_allow_html=True)
 
-col3.metric(
-    label="Number of Users",
-    value=f"{df_kpi['NUMBER_OF_USERS'][0]:,} Addresses"
-)
+with col3:
+    st.markdown(f"""
+    <div class="kpi-card">
+        <div class="kpi-label">Number of Users</div>
+        <div class="kpi-value">{df_kpi['NUMBER_OF_USERS'][0]:,} Addresses</div>
+    </div>
+    """, unsafe_allow_html=True)
 # --- Query Function: Row (2) --------------------------------------------------------------------------------------
 @st.cache_data
 def load_time_series_data(timeframe, start_date, end_date):
