@@ -669,13 +669,13 @@ def make_network_chart(df, weight_col, title):
     return fig
 
 # --- Tabs for Metrics -----------------------------------------------------------------------------------------
-tab1, tab2, tab3 = st.tabs(["Swap Volume", "Swap Count", "Swapper Count"])
+tab1, tab2, tab3 = st.tabs(["Swapper Count", "Swap Count", "Swap Volume"])
 
 with tab1:
-    st.plotly_chart(make_network_chart(df_flows, "Swap Volume (USD)", "Flows by Swap Volume"), use_container_width=True)
+    st.plotly_chart(make_network_chart(df_flows, "Swapper Count", "Flows by Swapper Count"), use_container_width=True)
 
 with tab2:
     st.plotly_chart(make_network_chart(df_flows, "Swap Count", "Flows by Swap Count"), use_container_width=True)
 
 with tab3:
-    st.plotly_chart(make_network_chart(df_flows, "Swapper Count", "Flows by Swapper Count"), use_container_width=True)
+    st.plotly_chart(make_network_chart(df_flows, "Swap Volume (USD)", "Flows by Swap Volume"), use_container_width=True)
