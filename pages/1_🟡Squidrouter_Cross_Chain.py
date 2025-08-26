@@ -605,7 +605,7 @@ def load_chain_flows(start_date, end_date):
            COUNT(DISTINCT id) AS "Swap Count", 
            COUNT(DISTINCT transfer_user) AS "Swapper Count"
     FROM axelar_service
-    WHERE created_at::date >= '{start_str}' AND created_at::date <= '{end_str}'
+    WHERE created_at::date >= '{start_str}' AND created_at::date <= '{end_str}' and amount_usd is not null
     GROUP BY 1, 2;
     """
 
