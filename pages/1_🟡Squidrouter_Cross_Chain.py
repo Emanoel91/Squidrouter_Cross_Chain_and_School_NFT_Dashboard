@@ -532,7 +532,7 @@ with col2:
     st.plotly_chart(fig2, use_container_width=True)
 
 
-# --- Cached Data Loader ------------------------------------------------------------------------------------------------------------------------------------------------
+# --- Cached Data Loader --------------------------------------------------------------------------------------
 @st.cache_data
 def load_chain_flows(start_date, end_date):
     start_str = start_date.strftime("%Y-%m-%d")
@@ -545,7 +545,7 @@ def load_chain_flows(start_date, end_date):
             created_at, 
             LOWER(data:send:original_source_chain) AS source_chain, 
             LOWER(data:send:original_destination_chain) AS destination_chain,
-            recipient_address AS user, 
+            recipient_address AS transfer_user, 
             CASE 
               WHEN IS_ARRAY(data:send:amount) OR IS_OBJECT(data:send:amount) THEN NULL
               WHEN TRY_TO_DOUBLE(data:send:amount::STRING) IS NOT NULL THEN TRY_TO_DOUBLE(data:send:amount::STRING)
@@ -559,8 +559,7 @@ def load_chain_flows(start_date, end_date):
               THEN TRY_TO_DOUBLE(data:send:amount::STRING) * TRY_TO_DOUBLE(data:link:price::STRING)
               ELSE NULL
             END AS amount_usd,
-            id, 
-            recipient_address AS user
+            id
         FROM axelar.axelscan.fact_transfers
         WHERE status = 'executed'
           AND simplified_status = 'received'
@@ -577,7 +576,7 @@ def load_chain_flows(start_date, end_date):
             created_at,
             LOWER(data:call.chain::STRING) AS source_chain,
             LOWER(data:call.returnValues.destinationChain::STRING) AS destination_chain,
-            data:call.transaction.from::STRING AS user,
+            data:call.transaction.from::STRING AS transfer_user,
             CASE 
               WHEN IS_ARRAY(data:amount) OR IS_OBJECT(data:amount) THEN NULL
               WHEN TRY_TO_DOUBLE(data:amount::STRING) IS NOT NULL THEN TRY_TO_DOUBLE(data:amount::STRING)
@@ -588,8 +587,7 @@ def load_chain_flows(start_date, end_date):
               WHEN TRY_TO_DOUBLE(data:value::STRING) IS NOT NULL THEN TRY_TO_DOUBLE(data:value::STRING)
               ELSE NULL
             END AS amount_usd,
-            id, 
-            data:call.transaction.from::STRING AS user
+            id
         FROM axelar.axelscan.fact_gmp 
         WHERE status = 'executed'
           AND simplified_status = 'received'
@@ -605,7 +603,7 @@ def load_chain_flows(start_date, end_date):
            destination_chain AS "Destination Chain",
            ROUND(SUM(amount_usd)) AS "Swap Volume (USD)", 
            COUNT(DISTINCT id) AS "Swap Count", 
-           COUNT(DISTINCT user) AS "Swapper Count"
+           COUNT(DISTINCT transfer_user) AS "Swapper Count"
     FROM axelar_service
     WHERE created_at::date >= '{start_str}' AND created_at::date <= '{end_str}'
     GROUP BY 1, 2;
@@ -617,18 +615,13 @@ def load_chain_flows(start_date, end_date):
 # --- Load Data -------------------------------------------------------------------------------------------------
 df_flows = load_chain_flows(start_date, end_date)
 
-# --- Build Graph Function --------------------------------------------------------------------------------------
+# --- Build Network Graph --------------------------------------------------------------------------------------
 def make_network_chart(df, weight_col, title):
     G = nx.DiGraph()
-
     for _, row in df.iterrows():
-        G.add_edge(
-            row["Source Chain"],
-            row["Destination Chain"],
-            weight=row[weight_col]
-        )
+        G.add_edge(row["Source Chain"], row["Destination Chain"], weight=row[weight_col])
 
-    pos = nx.spring_layout(G, k=0.5, seed=42)  # layout for visualization
+    pos = nx.spring_layout(G, k=0.5, seed=42)
 
     edge_x, edge_y, edge_width = [], [], []
     for u, v, d in G.edges(data=True):
@@ -672,7 +665,7 @@ def make_network_chart(df, weight_col, title):
                     ))
     return fig
 
-# --- Tabs for Different Metrics --------------------------------------------------------------------------------
+# --- Tabs for Metrics -----------------------------------------------------------------------------------------
 tab1, tab2, tab3 = st.tabs(["Swap Volume", "Swap Count", "Swapper Count"])
 
 with tab1:
