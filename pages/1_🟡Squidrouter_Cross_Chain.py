@@ -17,19 +17,6 @@ st.set_page_config(
 # --- Title -----------------------------------------------------------------------------------------------------
 st.title("🟡Squidrouter Cross Chain")
 
-# --- Builder Info ---------------------------------------------------------------------------------------------------------
-st.markdown(
-    """
-    <div style="margin-top: 20px; margin-bottom: 20px; font-size: 16px;">
-        <div style="display: flex; align-items: center; gap: 10px;">
-            <img src="https://pbs.twimg.com/profile_images/1841479747332608000/bindDGZQ_400x400.jpg" style="width:25px; height:25px; border-radius: 50%;">
-            <span>Built by: <a href="https://x.com/0xeman_raz" target="_blank">Eman Raz</a></span>
-        </div>
-    </div>
-    """,
-    unsafe_allow_html=True
-)
-
 st.info("📊Charts initially display data for a default time range. Select a custom range to view results for your desired period.")
 st.info("⏳On-chain data retrieval may take a few moments. Please wait while the results load.")
 
