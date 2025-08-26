@@ -239,7 +239,7 @@ col1, col2, col3 = st.columns(3)
 with col1:
     st.markdown(f"""
     <div class="kpi-card">
-        <div class="kpi-label">Volume of Transfers</div>
+        <div class="kpi-label">Volume of Swaps</div>
         <div class="kpi-value">${df_kpi['VOLUME_OF_TRANSFERS'][0]:,}</div>
     </div>
     """, unsafe_allow_html=True)
@@ -247,7 +247,7 @@ with col1:
 with col2:
     st.markdown(f"""
     <div class="kpi-card">
-        <div class="kpi-label">Number of Transfers</div>
+        <div class="kpi-label">Number of Swaps</div>
         <div class="kpi-value">{df_kpi['NUMBER_OF_TRANSFERS'][0]:,} Txns</div>
     </div>
     """, unsafe_allow_html=True)
@@ -255,7 +255,7 @@ with col2:
 with col3:
     st.markdown(f"""
     <div class="kpi-card">
-        <div class="kpi-label">Number of Users</div>
+        <div class="kpi-label">Number of Swappers</div>
         <div class="kpi-value">{df_kpi['NUMBER_OF_USERS'][0]:,} Addresses</div>
     </div>
     """, unsafe_allow_html=True)
