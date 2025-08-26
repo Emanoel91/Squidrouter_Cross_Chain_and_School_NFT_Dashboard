@@ -66,10 +66,10 @@ conn = snowflake.connector.connect(
 col1, col2, col3 = st.columns(3)
 
 with col1:
-    timeframe = st.selectbox("Select Time Frame", ["day", "week", "month"])
+    timeframe = st.selectbox("Select Time Frame", ["month", "week", "day"])
 
 with col2:
-    start_date = st.date_input("Start Date", value=pd.to_datetime("2024-01-01"))
+    start_date = st.date_input("Start Date", value=pd.to_datetime("2023-01-01"))
 
 with col3:
     end_date = st.date_input("End Date", value=pd.to_datetime("2025-08-31"))
@@ -187,7 +187,7 @@ df_kpi = load_kpi_data(timeframe, start_date, end_date)
 # --- KPI Row ------------------------------------------------------------------------------------------------------
 logo_url = "https://img.cryptorank.io/coins/squid1675241862798.png"
 
-# استایل کارت KPI
+
 kpi_card_style = f"""
 <style>
 .kpi-card {{
@@ -205,7 +205,7 @@ kpi_card_style = f"""
     content: "";
     background: url({logo_url}) no-repeat center;
     background-size: 120px;
-    opacity: 0.08;  /* کم‌رنگ بودن لوگو */
+    opacity: 0.08;  
     position: absolute;
     top: 50%;
     left: 50%;
@@ -232,10 +232,8 @@ kpi_card_style = f"""
 </style>
 """
 
-# اعمال استایل
 st.markdown(kpi_card_style, unsafe_allow_html=True)
 
-# سه ستون برای KPIها
 col1, col2, col3 = st.columns(3)
 
 with col1:
@@ -383,7 +381,7 @@ with col1:
         y="VOLUME_OF_TRANSFERS",
         title="Swap Volume Over Time (USD)",
         labels={"VOLUME_OF_TRANSFERS": "Volume (USD)", "DATE": "Date"},
-        color_discrete_sequence=["#e2fb43"]
+        color_discrete_sequence=["#80b4e4"]
     )
     fig1.update_layout(xaxis_title="", yaxis_title="USD", bargap=0.2)
     st.plotly_chart(fig1, use_container_width=True)
@@ -395,7 +393,7 @@ with col2:
         y="NUMBER_OF_TRANSFERS",
         title="Swap Count Over Time",
         labels={"NUMBER_OF_TRANSFERS": "Transactions", "DATE": "Date"},
-        color_discrete_sequence=["#e2fb43"]
+        color_discrete_sequence=["#80b4e4"]
     )
     fig2.update_layout(xaxis_title="", yaxis_title="Txns", bargap=0.2)
     st.plotly_chart(fig2, use_container_width=True)
