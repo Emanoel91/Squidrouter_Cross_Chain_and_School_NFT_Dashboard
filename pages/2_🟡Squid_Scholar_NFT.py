@@ -155,9 +155,9 @@ fig1.add_trace(go.Scatter(x=df4["Date"], y=df4["Total Number of NFT Minted"], na
 
 fig1.update_layout(
     title="Number of NFTs Minted per Day",
-    xaxis=dict(title="Date"),
-    yaxis=dict(title="Number of NFT Minted", side="left"),
-    yaxis2=dict(title="Total Number of NFT Minted", overlaying="y", side="right"),
+    xaxis=dict(title=" "),
+    yaxis=dict(title="NFT count", side="left"),
+    yaxis2=dict(title="NFT count", overlaying="y", side="right"),
     template="plotly_white"
 )
 
@@ -173,9 +173,9 @@ fig2.add_trace(go.Scatter(x=df5["Date"], y=df5["Total Value of NFTs Minted"], na
 
 fig2.update_layout(
     title="Value of NFTs Minted per Day",
-    xaxis=dict(title="Date"),
-    yaxis=dict(title="Value of NFTs Minted ($)", side="left"),
-    yaxis2=dict(title="Total Value of NFTs Minted ($)", overlaying="y", side="right"),
+    xaxis=dict(title=" "),
+    yaxis=dict(title="$USD", side="left"),
+    yaxis2=dict(title="$USD", overlaying="y", side="right"),
     template="plotly_white"
 )
 
@@ -199,8 +199,8 @@ df7.index = df7.index + 1
 col6, col7 = st.columns(2)
 with col6:
     st.subheader("📋 Number of NFT Minted vs Minters")
-    st.dataframe(df6, use_container_width=True, height=200)  # ~ 5 rows, scrollable
+    st.dataframe(df6, use_container_width=True, height=250)  # ~ 5 rows, scrollable
 
 with col7:
     st.subheader("📋 Top Addresses by NFT Minted")
-    st.dataframe(df7, use_container_width=True, height=200)  # ~ 5 rows, scrollable
+    st.dataframe(df7, use_container_width=True, height=250)  # ~ 5 rows, scrollable
