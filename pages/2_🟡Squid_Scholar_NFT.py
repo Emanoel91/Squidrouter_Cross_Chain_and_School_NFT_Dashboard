@@ -14,10 +14,7 @@ st.set_page_config(
 )
 
 # --- Title ------------------------------------------------------------------------------------------------------------
-st.markdown("""
-<h1 style='text-align: center; color: #f1c40f;'>🟡 Squid Scholar NFT Dashboard</h1>
-""", unsafe_allow_html=True)
-
+st.title("🟡 Squid Scholar NFT")
 # --- Attention --------------------------------------------------------------------------------------------------------
 st.info("⏳On-chain data retrieval may take a few moments. Please wait while the results load.")
 
