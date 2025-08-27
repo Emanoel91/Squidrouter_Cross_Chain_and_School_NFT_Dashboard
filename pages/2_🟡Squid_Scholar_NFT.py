@@ -5,6 +5,7 @@ import plotly.graph_objects as go
 import plotly.express as px
 from cryptography.hazmat.primitives import serialization
 from cryptography.hazmat.backends import default_backend
+import requests
 
 # --- Page Config ------------------------------------------------------------------------------------------------------
 st.set_page_config(
@@ -93,3 +94,78 @@ conn = snowflake.connector.connect(
     database=database,
     schema=schema
 )
+
+# Helper function to load data from API
+with col1:
+st.metric("Number of NFT Minted", f"{kpi1:,}")
+with col2:
+st.metric("Unique NFT Minters", f"{kpi2:,}")
+with col3:
+st.metric("Total Value of NFTs Minted ($)", f"${kpi3:,.0f}")
+
+
+# --- 3: Number of NFTs Minted per Day ---------------------------------------------------------------------------------
+url3 = "https://api.dune.com/api/v1/query/5693886/results?api_key=kmCBMTxWKBxn6CVgCXhwDvcFL1fBp6rO"
+df3 = pd.DataFrame(load_api(url3))
+df3["Date"] = pd.to_datetime(df3["Date"])
+
+
+fig1 = go.Figure()
+fig1.add_bar(x=df3["Date"], y=df3["Number of NFT Minted"], name="Number of NFT Minted", yaxis="y1")
+fig1.add_trace(go.Scatter(x=df3["Date"], y=df3["Total Number of NFT Minted"], name="Total Number of NFT Minted", yaxis="y2", mode="lines+markers"))
+
+
+fig1.update_layout(
+title="Number of NFTs Minted per Day",
+xaxis=dict(title="Date"),
+yaxis=dict(title="Number of NFT Minted", side="left"),
+yaxis2=dict(title="Total Number of NFT Minted", overlaying="y", side="right")
+)
+
+
+# --- 4: Value of NFTs Minted per Day ----------------------------------------------------------------------------------
+url4 = "https://api.dune.com/api/v1/query/5693983/results?api_key=kmCBMTxWKBxn6CVgCXhwDvcFL1fBp6rO"
+df4 = pd.DataFrame(load_api(url4))
+df4["Date"] = pd.to_datetime(df4["Date"])
+
+
+fig2 = go.Figure()
+fig2.add_bar(x=df4["Date"], y=df4["Value of NFTs Minted"], name="Value of NFTs Minted", yaxis="y1")
+fig2.add_trace(go.Scatter(x=df4["Date"], y=df4["Total Value of NFTs Minted"], name="Total Value of NFTs Minted", yaxis="y2", mode="lines+markers"))
+
+
+fig2.update_layout(
+title="Value of NFTs Minted per Day",
+xaxis=dict(title="Date"),
+yaxis=dict(title="Value of NFTs Minted ($)", side="left"),
+yaxis2=dict(title="Total Value of NFTs Minted ($)", overlaying="y", side="right")
+)
+
+
+col4, col5 = st.columns(2)
+with col4:
+st.plotly_chart(fig1, use_container_width=True)
+with col5:
+st.plotly_chart(fig2, use_container_width=True)
+
+
+# --- 5: Table Number of NFT Minted vs Minters -------------------------------------------------------------------------
+url5 = "https://api.dune.com/api/v1/query/5693905/results?api_key=kmCBMTxWKBxn6CVgCXhwDvcFL1fBp6rO"
+df5 = pd.DataFrame(load_api(url5))
+df5.index = df5.index + 1 # index start from 1
+
+
+# --- 6: Table Addresses and NFTs Minted -------------------------------------------------------------------------------
+url6 = "https://api.dune.com/api/v1/query/5694318/results?api_key=kmCBMTxWKBxn6CVgCXhwDvcFL1fBp6rO"
+df6 = pd.DataFrame(load_api(url6))
+df6 = df6.rename(columns={"to": "Address"})
+df6.index = df6.index + 1
+
+
+col6, col7 = st.columns(2)
+with col6:
+st.subheader("Number of NFT Minted vs Minters")
+st.dataframe(df5, use_container_width=True)
+with col7:
+st.subheader("Top Addresses by NFT Minted")
+st.dataframe(df6, use_container_width=True)
