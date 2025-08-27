@@ -23,48 +23,45 @@ st.info("📊Tables initially display data for a default time range. Select a cu
 st.info("⏳On-chain data retrieval may take a few moments. Please wait while the results load.")
 
 # --- Sidebar Footer Slightly Left-Aligned -----------------------------------------------------------------------------
-st.sidebar.markdown(
-    """
-    <style>
-    .sidebar-footer {
-        position: fixed;
-        bottom: 20px;
-        width: 250px;
-        font-size: 13px;
-        color: gray;
-        margin-left: 5px;
-        text-align: left;  
-    }
-    .sidebar-footer img {
-        width: 16px;
-        height: 16px;
-        vertical-align: middle;
-        border-radius: 50%;
-        margin-right: 5px;
-    }
-    .sidebar-footer a {
-        color: gray;
-        text-decoration: none;
-    }
-    </style>
+st.sidebar.markdown("""
+<style>
+.sidebar-footer {
+    position: fixed;
+    bottom: 20px;
+    width: 250px;
+    font-size: 13px;
+    color: gray;
+    margin-left: 5px;
+    text-align: left;  
+}
+.sidebar-footer img {
+    width: 16px;
+    height: 16px;
+    vertical-align: middle;
+    border-radius: 50%;
+    margin-right: 5px;
+}
+.sidebar-footer a {
+    color: gray;
+    text-decoration: none;
+}
+</style>
 
-    <div class="sidebar-footer">
-        <div>
-            <a href="https://x.com/axelar" target="_blank">
-                <img src="https://img.cryptorank.io/coins/axelar1663924228506.png" alt="Axelar Logo">
-                Powered by Axelar
-            </a>
-        </div>
-        <div style="margin-top: 5px;">
-            <a href="https://x.com/0xeman_raz" target="_blank">
-                <img src="https://pbs.twimg.com/profile_images/1841479747332608000/bindDGZQ_400x400.jpg" alt="Eman Raz">
-                Built by Eman Raz
-            </a>
-        </div>
+<div class="sidebar-footer">
+    <div>
+        <a href="https://x.com/axelar" target="_blank">
+            <img src="https://img.cryptorank.io/coins/axelar1663924228506.png" alt="Axelar Logo">
+            Powered by Axelar
+        </a>
     </div>
-    """,
-    unsafe_allow_html=True
-)
+    <div style="margin-top: 5px;">
+        <a href="https://x.com/0xeman_raz" target="_blank">
+            <img src="https://pbs.twimg.com/profile_images/1841479747332608000/bindDGZQ_400x400.jpg" alt="Eman Raz">
+            Built by Eman Raz
+        </a>
+    </div>
+</div>
+""", unsafe_allow_html=True)
 
 # --- Snowflake Connection ---------------------------------------------------------------------------------------------
 snowflake_secrets = st.secrets["snowflake"]
@@ -149,7 +146,7 @@ cutoff_date = pd.to_datetime("2024-08-17")
 # --- 3: Number of NFTs Minted per Day ---------------------------------------------------------------------------------
 url4 = "https://api.dune.com/api/v1/query/5693886/results?api_key=kmCBMTxWKBxn6CVgCXhwDvcFL1fBp6rO"
 df4 = pd.DataFrame(load_api(url4))
-df4["Date"] = pd.to_datetime(df4["Date"])
+df4["Date"] = pd.to_datetime(df4["Date"]).dt.tz_localize(None)
 df4 = df4[df4["Date"] <= cutoff_date]
 
 fig1 = go.Figure()
@@ -167,7 +164,7 @@ fig1.update_layout(
 # --- 4: Value of NFTs Minted per Day ----------------------------------------------------------------------------------
 url5 = "https://api.dune.com/api/v1/query/5693983/results?api_key=kmCBMTxWKBxn6CVgCXhwDvcFL1fBp6rO"
 df5 = pd.DataFrame(load_api(url5))
-df5["Date"] = pd.to_datetime(df5["Date"])
+df5["Date"] = pd.to_datetime(df5["Date"]).dt.tz_localize(None)
 df5 = df5[df5["Date"] <= cutoff_date]
 
 fig2 = go.Figure()
@@ -202,8 +199,8 @@ df7.index = df7.index + 1
 col6, col7 = st.columns(2)
 with col6:
     st.subheader("📋 Number of NFT Minted vs Minters")
-    st.dataframe(df6, use_container_width=True, height=200)  # ~ 5 rows
+    st.dataframe(df6, use_container_width=True, height=200)  # ~ 5 rows, scrollable
 
 with col7:
     st.subheader("📋 Top Addresses by NFT Minted")
-    st.dataframe(df7, use_container_width=True, height=200)  # ~ 5 rows
+    st.dataframe(df7, use_container_width=True, height=200)  # ~ 5 rows, scrollable
