@@ -322,12 +322,23 @@ with col1:
 
 # Chart 2
 with col2:
-    fig2 = px.area(df, x="Date", y="User Growth", title="Users Growth Over Time")
-    fig2.update_layout(
-        xaxis_title=" ",
-        yaxis_title="user count",
-        template="plotly_white"
+    fig1 = go.Figure()
+fig1.add_trace(
+    go.Scatter(
+        x=df["Date"],
+        y=df["User Growth"],
+        name="User Growth"
     )
-    st.plotly_chart(fig2, use_container_width=True)
+)
+
+fig1.update_layout(
+    title="Squid User Growth per Day (During the NFT minting period)",
+    xaxis_title=" ",
+    yaxis_title="User count",
+    legend_title=" ",
+    template="plotly_white"
+)
+
+st.plotly_chart(fig1, use_container_width=True)
 
 
