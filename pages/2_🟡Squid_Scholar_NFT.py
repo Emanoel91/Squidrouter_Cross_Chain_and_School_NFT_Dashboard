@@ -104,17 +104,17 @@ def load_api(url):
 
 # --- KPI Section ------------------------------------------------------------------------------------------------------
 # Total Minters
-url1 = "https://api.dune.com/api/v1/query/5693825/results?api_key=kmCBMTxWKBxn6CVgCXhwDvcFL1fBp6rO"
+url1 = "https://api.dune.com/api/v1/query/5689736/results?api_key=kmCBMTxWKBxn6CVgCXhwDvcFL1fBp6rO"
 df1 = pd.DataFrame(load_api(url1))
 kpi1 = df1["Total Minters"].iloc[0]
 
 # Total NFTs Minted
-url2 = "https://api.dune.com/api/v1/query/5693849/results?api_key=kmCBMTxWKBxn6CVgCXhwDvcFL1fBp6rO"
+url2 = "https://api.dune.com/api/v1/query/5689736/results?api_key=kmCBMTxWKBxn6CVgCXhwDvcFL1fBp6rO"
 df2 = pd.DataFrame(load_api(url2))
 kpi2 = df2["Total NFTs Minted"].iloc[0]
 
 # Total Value of NFTs Minted
-url3 = "https://api.dune.com/api/v1/query/5693983/results?api_key=kmCBMTxWKBxn6CVgCXhwDvcFL1fBp6rO"
+url3 = "https://api.dune.com/api/v1/query/5689736/results?api_key=kmCBMTxWKBxn6CVgCXhwDvcFL1fBp6rO"
 df3_kpi = pd.DataFrame(load_api(url3))
 kpi3 = df3_kpi["Total Value of NFTs Minted"].iloc[-1]
 
