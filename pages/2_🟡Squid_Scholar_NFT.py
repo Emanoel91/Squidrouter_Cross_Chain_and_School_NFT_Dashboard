@@ -311,7 +311,7 @@ with col1:
     fig1.add_trace(go.Bar(x=df["Date"], y=df["New Users"], name="New Users"))
     fig1.update_layout(
         barmode="stack",
-        title="Number of Swappers Over Time",
+        title="Number of Squid Swappers per Day (During the NFT minting period)",
         xaxis_title=" ",
         yaxis_title="User count",
         legend_title=" ",
@@ -330,7 +330,7 @@ with col2:
         )
     )
     fig2.update_layout(
-        title="Squid User Growth per Day (During the NFT minting period)",
+        title="Squid Swapper Growth per Day (During the NFT minting period)",
         xaxis_title=" ",
         yaxis_title="User count",
         legend_title=" ",
