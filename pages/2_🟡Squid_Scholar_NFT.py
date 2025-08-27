@@ -115,7 +115,7 @@ col1, col2, col3 = st.columns(3)
 with col1:
     st.markdown(f"""
     <div style="background-color:#27ae60; padding:20px; border-radius:15px; text-align:center;">
-    <h3 style="color:white;">Unique NFT Minters</h3>
+    <h3 style="color:white;">Number of NFT Minters</h3>
     <h2 style="color:white;">{kpi1:,}</h2>
     </div>
     """, unsafe_allow_html=True)
