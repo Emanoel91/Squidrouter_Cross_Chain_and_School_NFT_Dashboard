@@ -203,9 +203,8 @@ with col7:
 
 # ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 @st.cache_data
-def load_user_data(timeframe, start_date, end_date):
-    start_str = start_date.strftime("%Y-%m-%d")
-    end_str = end_date.strftime("%Y-%m-%d")
+def load_user_data():
+    
 
     query = f"""
     WITH table1 AS (
@@ -301,7 +300,7 @@ def load_user_data(timeframe, start_date, end_date):
     return df
 
 # --- Load Data -------------------------------------------------------------------------------------------------
-df = load_user_data(timeframe, start_date, end_date)
+df = load_user_data()
 
 # --- Charts in One Row ----------------------------------------------------------------------------------------
 col1, col2 = st.columns(2)
