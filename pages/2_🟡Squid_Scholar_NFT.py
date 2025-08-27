@@ -103,18 +103,18 @@ def load_api(url):
     return r.json()["result"]["rows"]
 
 # --- KPI Section ------------------------------------------------------------------------------------------------------
-# Total Minters
+# Unique NFT Minters
 url1 = "https://api.dune.com/api/v1/query/5689736/results?api_key=kmCBMTxWKBxn6CVgCXhwDvcFL1fBp6rO"
 df1 = pd.DataFrame(load_api(url1))
-kpi1 = df1["Total Minters"].iloc[0]
+kpi1 = df1["Unique NFT Minters"].iloc[0]
 
-# Total NFTs Minted
+# Number of NFT Minted
 url2 = "https://api.dune.com/api/v1/query/5689736/results?api_key=kmCBMTxWKBxn6CVgCXhwDvcFL1fBp6rO"
 df2 = pd.DataFrame(load_api(url2))
-kpi2 = df2["Total NFTs Minted"].iloc[0]
+kpi2 = df2["Number of NFT Minted"].iloc[0]
 
 # Total Value of NFTs Minted
-url3 = "https://api.dune.com/api/v1/query/5689736/results?api_key=kmCBMTxWKBxn6CVgCXhwDvcFL1fBp6rO"
+url3 = "https://api.dune.com/api/v1/query/5693947/results?api_key=kmCBMTxWKBxn6CVgCXhwDvcFL1fBp6rO"
 df3_kpi = pd.DataFrame(load_api(url3))
 kpi3 = df3_kpi["Total Value of NFTs Minted"].iloc[-1]
 
@@ -122,7 +122,7 @@ col1, col2, col3 = st.columns(3)
 with col1:
     st.markdown(f"""
     <div style="background-color:#27ae60; padding:20px; border-radius:15px; text-align:center;">
-    <h3 style="color:white;">Total Minters</h3>
+    <h3 style="color:white;">Unique NFT Minters</h3>
     <h2 style="color:white;">{kpi1:,}</h2>
     </div>
     """, unsafe_allow_html=True)
@@ -130,7 +130,7 @@ with col1:
 with col2:
     st.markdown(f"""
     <div style="background-color:#2980b9; padding:20px; border-radius:15px; text-align:center;">
-    <h3 style="color:white;">Total NFTs Minted</h3>
+    <h3 style="color:white;">Number of NFT Minted</h3>
     <h2 style="color:white;">{kpi2:,}</h2>
     </div>
     """, unsafe_allow_html=True)
