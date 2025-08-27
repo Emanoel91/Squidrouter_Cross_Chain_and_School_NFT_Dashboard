@@ -138,7 +138,7 @@ with col2:
 with col3:
     st.markdown(f"""
     <div style="background-color:#f39c12; padding:20px; border-radius:15px; text-align:center;">
-    <h3 style="color:white;">Total Value of NFTs Minted ($)</h3>
+    <h3 style="color:white;">Total Value of NFTs Minted</h3>
     <h2 style="color:white;">${kpi3:,.0f}</h2>
     </div>
     """, unsafe_allow_html=True)
