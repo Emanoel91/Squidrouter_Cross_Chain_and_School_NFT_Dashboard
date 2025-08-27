@@ -15,7 +15,9 @@ st.set_page_config(
 )
 
 # --- Title  -----------------------------------------------------------------------------------------------------
-st.title("🟡Squid Scholar NFT")
+st.markdown("""
+<h1 style='text-align: center; color: #f1c40f;'>🟡 Squid Scholar NFT Dashboard</h1>
+""", unsafe_allow_html=True)
 
 # --- attention ---------------------------------------------------------------------------------------------------------
 st.info("📊Tables initially display data for a default time range. Select a custom range to view results for your desired period.")
@@ -96,12 +98,17 @@ conn = snowflake.connector.connect(
 )
 
 # Helper function to load data from API
-with col1:
-st.metric("Number of NFT Minted", f"{kpi1:,}")
-with col2:
-st.metric("Unique NFT Minters", f"{kpi2:,}")
+</div>
+""", unsafe_allow_html=True)
+
+
 with col3:
-st.metric("Total Value of NFTs Minted ($)", f"${kpi3:,.0f}")
+st.markdown(f"""
+<div style="background-color:#f39c12; padding:20px; border-radius:15px; text-align:center;">
+<h3 style="color:white;">Total Value of NFTs Minted ($)</h3>
+<h2 style="color:white;">${kpi3:,.0f}</h2>
+</div>
+""", unsafe_allow_html=True)
 
 
 # --- 3: Number of NFTs Minted per Day ---------------------------------------------------------------------------------
@@ -111,15 +118,16 @@ df3["Date"] = pd.to_datetime(df3["Date"])
 
 
 fig1 = go.Figure()
-fig1.add_bar(x=df3["Date"], y=df3["Number of NFT Minted"], name="Number of NFT Minted", yaxis="y1")
-fig1.add_trace(go.Scatter(x=df3["Date"], y=df3["Total Number of NFT Minted"], name="Total Number of NFT Minted", yaxis="y2", mode="lines+markers"))
+fig1.add_bar(x=df3["Date"], y=df3["Number of NFT Minted"], name="Number of NFT Minted", yaxis="y1", marker_color="#3498db")
+fig1.add_trace(go.Scatter(x=df3["Date"], y=df3["Total Number of NFT Minted"], name="Total Number of NFT Minted", yaxis="y2", mode="lines+markers", line=dict(color="#2ecc71", width=2)))
 
 
 fig1.update_layout(
 title="Number of NFTs Minted per Day",
 xaxis=dict(title="Date"),
 yaxis=dict(title="Number of NFT Minted", side="left"),
-yaxis2=dict(title="Total Number of NFT Minted", overlaying="y", side="right")
+yaxis2=dict(title="Total Number of NFT Minted", overlaying="y", side="right"),
+template="plotly_white"
 )
 
 
@@ -130,15 +138,16 @@ df4["Date"] = pd.to_datetime(df4["Date"])
 
 
 fig2 = go.Figure()
-fig2.add_bar(x=df4["Date"], y=df4["Value of NFTs Minted"], name="Value of NFTs Minted", yaxis="y1")
-fig2.add_trace(go.Scatter(x=df4["Date"], y=df4["Total Value of NFTs Minted"], name="Total Value of NFTs Minted", yaxis="y2", mode="lines+markers"))
+fig2.add_bar(x=df4["Date"], y=df4["Value of NFTs Minted"], name="Value of NFTs Minted", yaxis="y1", marker_color="#9b59b6")
+fig2.add_trace(go.Scatter(x=df4["Date"], y=df4["Total Value of NFTs Minted"], name="Total Value of NFTs Minted", yaxis="y2", mode="lines+markers", line=dict(color="#e74c3c", width=2)))
 
 
 fig2.update_layout(
 title="Value of NFTs Minted per Day",
 xaxis=dict(title="Date"),
 yaxis=dict(title="Value of NFTs Minted ($)", side="left"),
-yaxis2=dict(title="Total Value of NFTs Minted ($)", overlaying="y", side="right")
+yaxis2=dict(title="Total Value of NFTs Minted ($)", overlaying="y", side="right"),
+template="plotly_white"
 )
 
 
@@ -164,8 +173,8 @@ df6.index = df6.index + 1
 
 col6, col7 = st.columns(2)
 with col6:
-st.subheader("Number of NFT Minted vs Minters")
-st.dataframe(df5, use_container_width=True)
+st.subheader("📋 Number of NFT Minted vs Minters")
+st.dataframe(df5, use_container_width=True, height=400)
 with col7:
-st.subheader("Top Addresses by NFT Minted")
-st.dataframe(df6, use_container_width=True)
+st.subheader("📋 Top Addresses by NFT Minted")
+st.dataframe(df6, use_container_width=True, height=400)
