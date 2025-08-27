@@ -200,3 +200,135 @@ with col6:
 with col7:
     st.subheader("📋 Top Addresses by NFT Minted")
     st.dataframe(df7, use_container_width=True, height=250)  # ~ 5 rows, scrollable
+
+# ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+@st.cache_data
+def load_user_data(timeframe, start_date, end_date):
+    start_str = start_date.strftime("%Y-%m-%d")
+    end_str = end_date.strftime("%Y-%m-%d")
+
+    query = f"""
+    WITH table1 AS (
+        WITH overview AS (
+            WITH axelar_service AS (
+                SELECT 
+                    created_at, 
+                    recipient_address AS user
+                FROM axelar.axelscan.fact_transfers
+                WHERE status = 'executed'
+                  AND simplified_status = 'received'
+                  AND (
+                      sender_address ilike '%0xce16F69375520ab01377ce7B88f5BA8C48F8D666%'
+                      OR sender_address ilike '%0x492751eC3c57141deb205eC2da8bFcb410738630%'
+                      OR sender_address ilike '%0xDC3D8e1Abe590BCa428a8a2FC4CfDbD1AcF57Bd9%'
+                      OR sender_address ilike '%0xdf4fFDa22270c12d0b5b3788F1669D709476111E%'
+                      OR sender_address ilike '%0xe6B3949F9bBF168f4E3EFc82bc8FD849868CC6d8%'
+                  ) 
+                UNION ALL
+                SELECT  
+                    created_at,
+                    data:call.transaction.from::STRING AS user
+                FROM axelar.axelscan.fact_gmp 
+                WHERE status = 'executed'
+                  AND simplified_status = 'received'
+                  AND (
+                      data:approved:returnValues:contractAddress ilike '%0xce16F69375520ab01377ce7B88f5BA8C48F8D666%'
+                      OR data:approved:returnValues:contractAddress ilike '%0x492751eC3c57141deb205eC2da8bFcb410738630%'
+                      OR data:approved:returnValues:contractAddress ilike '%0xDC3D8e1Abe590BCa428a8a2FC4CfDbD1AcF57Bd9%'
+                      OR data:approved:returnValues:contractAddress ilike '%0xdf4fFDa22270c12d0b5b3788F1669D709476111E%'
+                      OR data:approved:returnValues:contractAddress ilike '%0xe6B3949F9bBF168f4E3EFc82bc8FD849868CC6d8%'
+                  ) 
+            )
+            SELECT user, MIN(created_at::date) AS first_date
+            FROM axelar_service
+            GROUP BY 1
+        )
+        SELECT date_trunc('day', first_date) AS "Date",
+               COUNT(DISTINCT user) AS "New Users", 
+               SUM(COUNT(DISTINCT user)) OVER (ORDER BY date_trunc('day', first_date)) AS "User Growth"
+        FROM overview 
+        WHERE first_date >= '2024-07-05' AND first_date <= '2024-08-17'
+        GROUP BY 1
+    ),
+    table2 AS (
+        WITH axelar_service AS (
+            SELECT 
+                created_at, 
+                recipient_address AS user
+            FROM axelar.axelscan.fact_transfers
+            WHERE status = 'executed'
+              AND simplified_status = 'received'
+              AND (
+                  sender_address ilike '%0xce16F69375520ab01377ce7B88f5BA8C48F8D666%'
+                  OR sender_address ilike '%0x492751eC3c57141deb205eC2da8bFcb410738630%'
+                  OR sender_address ilike '%0xDC3D8e1Abe590BCa428a8a2FC4CfDbD1AcF57Bd9%'
+                  OR sender_address ilike '%0xdf4fFDa22270c12d0b5b3788F1669D709476111E%'
+                  OR sender_address ilike '%0xe6B3949F9bBF168f4E3EFc82bc8FD849868CC6d8%'
+              ) 
+            UNION ALL
+            SELECT  
+                created_at,
+                data:call.transaction.from::STRING AS user
+            FROM axelar.axelscan.fact_gmp 
+            WHERE status = 'executed'
+              AND simplified_status = 'received'
+              AND (
+                  data:approved:returnValues:contractAddress ilike '%0xce16F69375520ab01377ce7B88f5BA8C48F8D666%'
+                  OR data:approved:returnValues:contractAddress ilike '%0x492751eC3c57141deb205eC2da8bFcb410738630%'
+                  OR data:approved:returnValues:contractAddress ilike '%0xDC3D8e1Abe590BCa428a8a2FC4CfDbD1AcF57Bd9%'
+                  OR data:approved:returnValues:contractAddress ilike '%0xdf4fFDa22270c12d0b5b3788F1669D709476111E%'
+                  OR data:approved:returnValues:contractAddress ilike '%0xe6B3949F9bBF168f4E3EFc82bc8FD849868CC6d8%'
+              ) 
+        )
+        SELECT date_trunc('day', created_at) AS "Date",
+               COUNT(DISTINCT user) AS "Total Users"
+        FROM axelar_service
+        WHERE created_at::date >= '2024-07-05' AND created_at::date <= '2024-08-17'
+        GROUP BY 1
+    )
+    SELECT 
+        table1."Date" AS "Date",
+        "Total Users",
+        "New Users", 
+        "Total Users" - "New Users" AS "Active Users",
+        "User Growth"
+    FROM table1 
+    LEFT JOIN table2 ON table1."Date" = table2."Date"
+    ORDER BY 1;
+    """
+
+    df = pd.read_sql(query, conn)
+    return df
+
+# --- Load Data -------------------------------------------------------------------------------------------------
+df = load_user_data(timeframe, start_date, end_date)
+
+# --- Charts in One Row ----------------------------------------------------------------------------------------
+col1, col2 = st.columns(2)
+
+# Chart 1
+with col1:
+    fig1 = go.Figure()
+    fig1.add_trace(go.Bar(x=df["Date"], y=df["New Users"], name="New Users"))
+    
+    fig1.update_layout(
+        barmode="stack",
+        title="Number of Swappers Over Time",
+        xaxis_title=" ",
+        yaxis_title="User count",
+        legend_title=" ",
+        template="plotly_white"
+    )
+    st.plotly_chart(fig1, use_container_width=True)
+
+# Chart 2
+with col2:
+    fig2 = px.area(df, x="Date", y="User Growth", title="Users Growth Over Time")
+    fig2.update_layout(
+        xaxis_title=" ",
+        yaxis_title="user count",
+        template="plotly_white"
+    )
+    st.plotly_chart(fig2, use_container_width=True)
+
+
