@@ -154,7 +154,14 @@ fig1.update_layout(
     xaxis=dict(title=" "),
     yaxis=dict(title="NFT count", side="left"),
     yaxis2=dict(title="NFT count", overlaying="y", side="right"),
-    template="plotly_white"
+    template="plotly_white",
+    legend=dict(
+        orientation="h",   
+        yanchor="bottom", 
+        y=1.05,           
+        xanchor="center",  
+        x=0.5
+    )
 )
 
 # --- 4: Value of NFTs Minted per Day ----------------------------------------------------------------------------------
@@ -172,7 +179,14 @@ fig2.update_layout(
     xaxis=dict(title=" "),
     yaxis=dict(title="$USD", side="left"),
     yaxis2=dict(title="$USD", overlaying="y", side="right"),
-    template="plotly_white"
+    template="plotly_white",
+    legend=dict(
+        orientation="h",   
+        yanchor="bottom", 
+        y=1.05,           
+        xanchor="center",  
+        x=0.5
+    )
 )
 
 col4, col5 = st.columns(2)
